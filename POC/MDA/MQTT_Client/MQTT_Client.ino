@@ -5,19 +5,16 @@
 #define PSW "22334455"
 
 EspMQTTClient client(
-<<<<<<< HEAD
-  "Wifi ssid",
-  "wifi pw",
-=======
-  "SSID_Wifi",
-  "PW_Wifi",
->>>>>>> b076c6c28eef22ad0734cc684d4e2ff112273a8f
+  "Wifi SSID",
+  "WiFi PW",
   "broker.mqtt.cool",  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
   "TestClient",     // Client name that uniquely identify your device
   1883              // The MQTT port, default to 1883. this line can be omitted
 );
+
+void onConnectionEstablished(){}
 
 void setup()
 {
@@ -26,14 +23,16 @@ void setup()
 
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
-    Serial.println("Conencatado a Wifi...");
+    Serial.println("Conectando a Wifi...");
   }
 
   Serial.print("Conectado a Wifi ");
   Serial.println(SSID);
 
-  if(!client.isMqttConnected()){
+  while(!client.isMqttConnected()){
+    Serial.println("Conectando a MQTT...");
     client.loop();
+    delay(500);
   }
 
   // Optional functionalities of EspMQTTClient
@@ -59,9 +58,18 @@ void loop() {
 
   if(WiFi.status() != WL_CONNECTED){
     WiFi.begin(SSID,PSW);
+    while(WiFi.status() != WL_CONNECTED){
+      delay(500);
+      Serial.println("Conectando a Wifi...");
+    }
   }
-  if(!client.isMqttConnected()){
+  if(!client.isMqttConnected() && WiFi.status() == WL_CONNECTED){
+    while(!client.isMqttConnected()){
+    Serial.println("Conectando a MQTT...");
     client.loop();
+    delay(500);
+  }
+    
   }
 
   delay(500);
