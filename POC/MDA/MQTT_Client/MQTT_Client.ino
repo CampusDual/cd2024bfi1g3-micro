@@ -8,8 +8,8 @@
 #include "EspMQTTClient.h"
 
 EspMQTTClient client(
-  "Wifi.DC",
-  "22334455",
+  "SSID_Wifi",
+  "PW_Wifi",
   "broker.mqtt.cool",  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
