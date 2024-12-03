@@ -5,8 +5,13 @@
 #define PSW "22334455"
 
 EspMQTTClient client(
+<<<<<<< HEAD
   "Wifi ssid",
   "wifi pw",
+=======
+  "SSID_Wifi",
+  "PW_Wifi",
+>>>>>>> b076c6c28eef22ad0734cc684d4e2ff112273a8f
   "broker.mqtt.cool",  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
