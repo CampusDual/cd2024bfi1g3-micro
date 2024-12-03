@@ -16,12 +16,12 @@
 #include <WiFiAP.h>
 
 #ifndef LED_BUILTIN
-#define LED_BUILTIN 2  // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
+// #define LED_BUILTIN 2  // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
 #endif
 
 // Set these to your desired credentials.
-const char *ssid = "yourAP";
-const char *password = "yourPassword";
+const char *ssid = "yourAp";
+const char *password = "hola1234";
 
 NetworkServer server(80);
 
