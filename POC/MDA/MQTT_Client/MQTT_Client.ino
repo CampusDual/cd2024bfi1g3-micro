@@ -1,15 +1,12 @@
-/*
-  SimpleMQTTClient.ino
-  The purpose of this exemple is to illustrate a simple handling of MQTT and Wifi connection.
-  Once it connects successfully to a Wifi network and a MQTT broker, it subscribe to a topic and send a message to it.
-  It will also send a message delayed 5 seconds later.
-*/
-
 #include "EspMQTTClient.h"
+#include <WiFi.h>
+
+#define SSID "Wifi.DC"
+#define PSW "22334455"
 
 EspMQTTClient client(
-  "Wifi.DC",
-  "22334455",
+  "Wifi ssid",
+  "wifi pw",
   "broker.mqtt.cool",  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
@@ -20,6 +17,19 @@ EspMQTTClient client(
 void setup()
 {
   Serial.begin(115200);
+  WiFi.begin(SSID,PSW);
+
+  while(WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.println("Conencatado a Wifi...");
+  }
+
+  Serial.print("Conectado a Wifi ");
+  Serial.println(SSID);
+
+  if(!client.isMqttConnected()){
+    client.loop();
+  }
 
   // Optional functionalities of EspMQTTClient
   client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
@@ -28,43 +38,25 @@ void setup()
   client.enableLastWillMessage("TestClient/lastwill", "I am going offline");  // You can activate the retain flag by setting the third parameter to true
 }
 
-// This function is called once everything is connected (Wifi and MQTT)
-// WARNING : YOU MUST IMPLEMENT IT IF YOU USE EspMQTTClient
-void onConnectionEstablished()
-{
-  /*// Subscribe to "mytopic/test" and display received message to Serial
-  client.subscribe("/test_micro", [](const String & payload) {
-    Serial.println(payload);
-  });
-
-  // Subscribe to "mytopic/wildcardtest/#" and display received message to Serial
-  client.subscribe("/test_micro", [](const String & topic, const String & payload) {
-    Serial.println("(From wildcard) topic: " + topic + ", payload: " + payload);
-  });
-
-  // Publish a message to "mytopic/test"
-  client.publish("/test_micro", "This is a message"); // You can activate the retain flag by setting the third parameter to true
-
-  // Execute delayed instructions
-  client.executeDelayed(5 * 1000, []() {
-    client.publish("/test_micro", "This is a message sent 5 seconds later");
-  });*/
-}
-
-/*void loop()
-{
-  client.loop();
-
-  Serial.println("Fin loop");
-}*/
 void loop() {
-  client.loop();
+  while(WiFi.status() == WL_CONNECTED){
+    while(client.isConnected()){
+      Serial.println("Escribir mensaje");
+      if (Serial.available() > 0) {
+        String textoSerial = Serial.readStringUntil('\n');
 
-  Serial.println("Escribir mensaje");
-  if (Serial.available() > 0) {
-    String textoSerial = Serial.readStringUntil('\n');
+        client.publish("/test_micro", textoSerial);
+      }
 
-    client.publish("/test_micro", textoSerial);
+    }//fin while mqtt
+
+  }//fin while wifi
+
+  if(WiFi.status() != WL_CONNECTED){
+    WiFi.begin(SSID,PSW);
+  }
+  if(!client.isMqttConnected()){
+    client.loop();
   }
 
   delay(500);
