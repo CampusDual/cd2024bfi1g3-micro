@@ -8,8 +8,8 @@
 #include "EspMQTTClient.h"
 
 EspMQTTClient client(
-  "SSID_Wifi",
-  "PW_Wifi",
+  "Wifi.DC",
+  "22334455",
   "broker.mqtt.cool",  // MQTT Broker server ip
   "MQTTUsername",   // Can be omitted if not needed
   "MQTTPassword",   // Can be omitted if not needed
@@ -32,7 +32,7 @@ void setup()
 // WARNING : YOU MUST IMPLEMENT IT IF YOU USE EspMQTTClient
 void onConnectionEstablished()
 {
-  // Subscribe to "mytopic/test" and display received message to Serial
+  /*// Subscribe to "mytopic/test" and display received message to Serial
   client.subscribe("/test_micro", [](const String & payload) {
     Serial.println(payload);
   });
@@ -43,15 +43,29 @@ void onConnectionEstablished()
   });
 
   // Publish a message to "mytopic/test"
-  client.publish("mytopic/test", "This is a message"); // You can activate the retain flag by setting the third parameter to true
+  client.publish("/test_micro", "This is a message"); // You can activate the retain flag by setting the third parameter to true
 
   // Execute delayed instructions
   client.executeDelayed(5 * 1000, []() {
     client.publish("/test_micro", "This is a message sent 5 seconds later");
-  });
+  });*/
 }
 
-void loop()
+/*void loop()
 {
   client.loop();
+
+  Serial.println("Fin loop");
+}*/
+void loop() {
+  client.loop();
+
+  Serial.println("Escribir mensaje");
+  if (Serial.available() > 0) {
+    String textoSerial = Serial.readStringUntil('\n');
+
+    client.publish("/test_micro", textoSerial);
+  }
+
+  delay(500);
 }
