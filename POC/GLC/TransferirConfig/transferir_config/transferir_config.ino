@@ -71,6 +71,11 @@ void loop() {
             client.print("Click <a href=\"/H\">here</a> to turn ON the LED.<br>");
             client.print("Click <a href=\"/L\">here</a> to turn OFF the LED.<br>");
 
+            client.print("<br><br>");
+            client.print("<label for='ssid'>WiFi: </label><input type='text' id='ssid'>");
+            client.print("<label for='pass'>Password: </label><input type='pass' id='pass'>");
+            client.print("<input type='submit' value='Enviar'>");
+
             // The HTTP response ends with another blank line:
             client.println();
             // break out of the while loop:
