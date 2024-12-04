@@ -1,0 +1,16 @@
+.home-container {
+    text-align: center;
+  }
+  
+  .modules-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .module {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+  }

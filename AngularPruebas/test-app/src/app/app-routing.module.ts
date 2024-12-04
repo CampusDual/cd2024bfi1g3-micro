@@ -9,6 +9,14 @@ const routes: Routes = [
   {path: 'calc', component:CalculadoraComponent},
   {path: 'home', component:HomeComponent},
   {path: '', redirectTo: '/home', pathMatch: 'full' },
+  {
+    path: 'home',
+    component: HomeComponent,
+    children: [
+      { path: 'tres-en-raya', component: TresRayaComponent },
+      { path: 'calc', component: CalculadoraComponent },
+    ],
+  },
   
 ];
 
