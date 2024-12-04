@@ -10,7 +10,9 @@ import { HomeComponent } from './components/home/home.component';
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    CalculadoraComponent,
+    TresRayaComponent
   ],
   imports: [
     BrowserModule,
