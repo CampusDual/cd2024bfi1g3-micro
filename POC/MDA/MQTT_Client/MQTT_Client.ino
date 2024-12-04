@@ -1,20 +1,21 @@
-#include "EspMQTTClient.h"
 #include <WiFi.h>
+#include <PubSubClient.h>
 
-#define SSID "Wifi.DC"
-#define PSW "22334455"
+#define SSID "Wifi_SSID"
+#define PSW "WIfi_PSW"
 
-EspMQTTClient client(
-  "Wifi SSID",
-  "WiFi PW",
-  "broker.mqtt.cool",  // MQTT Broker server ip
-  "MQTTUsername",   // Can be omitted if not needed
-  "MQTTPassword",   // Can be omitted if not needed
-  "TestClient",     // Client name that uniquely identify your device
-  1883              // The MQTT port, default to 1883. this line can be omitted
-);
+#define MQTT_IP "broker.mqtt.cool"
+#define MQTT_User ""
+#define MQTT_Pw ""
+#define MQTT_Client "TestClient"
+#define MQTT_Port 1883
+#define MQTT_Topic "/test_micro"
 
-void onConnectionEstablished(){}
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+String client_id = MQTT_Client;
+//client_id = String(WiFi.macAddress());
 
 void setup()
 {
@@ -29,48 +30,80 @@ void setup()
   Serial.print("Conectado a Wifi ");
   Serial.println(SSID);
 
-  while(!client.isMqttConnected()){
-    Serial.println("Conectando a MQTT...");
-    client.loop();
-    delay(500);
-  }
+    //Conectarse a MQTT
+  client.setServer(MQTT_IP, MQTT_Port);
+  client.setCallback(callback);
 
-  // Optional functionalities of EspMQTTClient
-  client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
-  client.enableHTTPWebUpdater(); // Enable the web updater. User and password default to values of MQTTUsername and MQTTPassword. These can be overridded with enableHTTPWebUpdater("user", "password").
-  client.enableOTA(); // Enable OTA (Over The Air) updates. Password defaults to MQTTPassword. Port is the default OTA port. Can be overridden with enableOTA("password", port).
-  client.enableLastWillMessage("TestClient/lastwill", "I am going offline");  // You can activate the retain flag by setting the third parameter to true
+  while (!client.connected()) {
+      
+      Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
+      if (client.connect(client_id.c_str(), MQTT_User, MQTT_Pw)) {
+          Serial.println("Public emqx mqtt broker connected");
+      } else {
+          Serial.print("failed with state ");
+          Serial.print(client.state());
+          delay(2000);
+      }
+  }
+  // publish and subscribe
+  //client.publish(MQTT_Topic, "Hi EMQX I'm ESP32 ^^");
+  //client.subscribe(MQTT_Topic);
 }
 
 void loop() {
-  while(WiFi.status() == WL_CONNECTED){
-    while(client.isConnected()){
-      Serial.println("Escribir mensaje");
-      if (Serial.available() > 0) {
-        String textoSerial = Serial.readStringUntil('\n');
+  client.loop();
 
-        client.publish("/test_micro", textoSerial);
-      }
-
-    }//fin while mqtt
-
-  }//fin while wifi
-
-  if(WiFi.status() != WL_CONNECTED){
-    WiFi.begin(SSID,PSW);
-    while(WiFi.status() != WL_CONNECTED){
-      delay(500);
-      Serial.println("Conectando a Wifi...");
+  if(WiFi.status() == WL_CONNECTED){
+    if(client.connected()){
+      client.publish(MQTT_Topic, "Mensaje test");
+    }else{
+      reconnect_MQTT();
     }
+
+  } else {
+    reconnect_WiFi();
   }
-  if(!client.isMqttConnected() && WiFi.status() == WL_CONNECTED){
-    while(!client.isMqttConnected()){
-    Serial.println("Conectando a MQTT...");
-    client.loop();
+  
+  delay(1000);
+}
+
+void callback(char *topic, byte *payload, unsigned int length) {
+ Serial.print("Message arrived in topic: ");
+ Serial.println(topic);
+ Serial.print("Message:");
+ for (int i = 0; i < length; i++) {
+     Serial.print((char) payload[i]);
+ }
+ Serial.println();
+ Serial.println("-----------------------");
+}
+
+void reconnect_MQTT() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+      
+      //Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
+      if (client.connect(client_id.c_str(), MQTT_User, MQTT_Pw)) {
+          Serial.println("Public emqx mqtt broker connected");
+      } else {
+          Serial.print("failed with state ");
+          Serial.print(client.state());
+          delay(2000);
+      }
+  }
+}
+
+void reconnect_WiFi() {
+
+  WiFi.begin(SSID,PSW);
+
+  while(WiFi.status() != WL_CONNECTED){
     delay(500);
-  }
-    
+    Serial.println("Conectando a Wifi...");
   }
 
-  delay(500);
+  Serial.print("Conectado a Wifi ");
+  Serial.println(SSID);
+
+
 }
