@@ -1,16 +1,16 @@
-
- #include <EEPROM.h>
+#include <Preferences.h>
 
 String wifi = "Wifilocas";
 String passWifi = "EstonoesUnapass";
 String wifiLeido;
 String passWifiLeido;
-int direccion;
+
+Preferences preferences;
 
 void setup() {
   Serial.begin(9600);
   delay(2000);
-  EEPROM.begin(512);
+  preferences.begin("datos-guardados", false);
 }
 
 void loop() {
@@ -20,11 +20,12 @@ void loop() {
 
     if (textoSerial.equalsIgnoreCase("E")) {
       Serial.println("Seleccionado escribir.");
-      escribir(wifi,0);
-      escribir(passWifi,1);
+      escribir(0, wifi);
+      escribir(1, passWifi);
     } else if (textoSerial.equalsIgnoreCase("L")) {
       Serial.println("Seleccionado leer.");
-      //leer();
+      wifiLeido = leer(0);
+      passWifiLeido = leer(1);
     } else if (textoSerial.equalsIgnoreCase("M")) {
       Serial.println("Seleccionado mostrar.");
       mostrar();
@@ -34,52 +35,17 @@ void loop() {
   delay(500);
 }
 
-void escribir(String frase, int posicion){
-  byte num;
-  for(int i=0;i<=posicion;i++){
-    if(i==0){
-      direccion=0;
-    }else{
-      EEPROM.get(direccion,num);
-      direccion+=num+1;
-    }
-  }
-  EEPROM.put( direccion, frase.length()); 
-  direccion++;
-  for(int i=0;i<frase.length();i++){
-    EEPROM.put( direccion, frase.charAt(i)); 
-    direccion++;
-  }
-  EEPROM.commit();
-  
+void escribir(int posicion, String value) {
+  String key = "key" + String(posicion);
+  preferences.putString(key.c_str(), value);
 }
 
-String leer(int posicion){
-  byte num;
-  String resultado="";
-  for(int i=0;i<=posicion;i++){
-    if(i==0){
-      direccion=0;
-    }else{
-      EEPROM.get(direccion,num);
-      direccion+=num+1;
-    }
-  }
-  //Obtener tamaño de dato a leer
-  EEPROM.get(direccion,num);
-  direccion++;
-
-  for (int i = 0; i < num; i++) {
-    char c;
-    EEPROM.get(direccion, c);
-    direccion++;
-    resultado += c;
-  }
-
- return resultado;
+String leer(int posicion) {
+  String key = "key" + String(posicion);
+  return preferences.getString(key.c_str(), "");
 }
 
-void mostrar(){
+void mostrar() {
   wifiLeido = leer(0);
   Serial.print("SSID wifi: ");
   Serial.println(wifiLeido);
@@ -87,3 +53,4 @@ void mostrar(){
   Serial.print("Contraseña leida: ");
   Serial.println(passWifiLeido);
 }
+
