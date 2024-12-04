@@ -6,5 +6,66 @@ import { Component } from '@angular/core';
   styleUrls: ['./calculadora.component.css']
 })
 export class CalculadoraComponent {
+  display: string = '';        
+  previousInput: string = ''; 
+  currentInput: string = '';  
+  operator: string = '';      
 
+  addNumber(number: string): void {
+    this.currentInput += number;
+  }
+
+  addOperator(op: string): void {
+    if (this.currentInput === '') return;
+    if (this.previousInput !== '') {
+      this.calculateResult(); 
+    }
+    this.operator = op;
+    this.previousInput = this.currentInput;
+    this.currentInput = '';
+  }
+
+  addDecimal(): void {
+    if (this.currentInput.includes('.')) return;
+    this.currentInput += '.';
+  }
+
+  // Función para calcular el resultado
+  calculateResult(): void {
+    if (this.previousInput === '' || this.currentInput === '') return;
+    let result: number;
+    const prev = parseFloat(this.previousInput);
+    const current = parseFloat(this.currentInput);
+
+    switch (this.operator) {
+      case '+':
+        result = prev + current;
+        break;
+      case '-':
+        result = prev - current;
+        break;
+      case '*':
+        result = prev * current;
+        break;
+      case '/':
+        if (current === 0) {
+          result = NaN; 
+        } else {
+          result = prev / current;
+        }
+        break;
+      default:
+        return;
+    }
+
+    this.currentInput = result.toString();
+    this.operator = '';
+    this.previousInput = '';
+  }
+
+  clear(): void {
+    this.currentInput = '';
+    this.previousInput = '';
+    this.operator = '';
+  }
 }
