@@ -3,16 +3,18 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-tres-raya',
   templateUrl: './tres-raya.component.html',
-  styleUrls: ['./tres-raya.component.css']
+  styleUrls: ['./tres-raya.component.css'],
 })
 export class TresRayaComponent {
   posiciones = [
-    ['-', '-', '-'],
-    ['-', '-', '-'],
-    ['-', '-', '-']
+    [' ', ' ', ' '],
+    [' ', ' ', ' '],
+    [' ', ' ', ' '],
   ];
 
-  jugadorActual = 'O';
+  jugadorActual = 'X';
+  marcadorX: number = 0;
+  marcadorO: number = 0;
 
   presion(fila: number, columna: number) {
     if (this.casillaLibre(fila, columna)) {
@@ -24,56 +26,72 @@ export class TresRayaComponent {
   }
 
   casillaLibre(fila: number, columna: number): boolean {
-    return this.posiciones[fila][columna] == '-';
+    return this.posiciones[fila][columna] == ' ';
   }
 
   verificarGano(jugador: string) {
-    if (this.posiciones[0][0] == jugador &&
+    if (
+      this.posiciones[0][0] == jugador &&
       this.posiciones[0][1] == jugador &&
-      this.posiciones[0][2] == jugador) {
-      alert(`Ganó: ${jugador}`);
+      this.posiciones[0][2] == jugador
+    ) {
+      this.anunciarGanador(jugador);
     }
 
-    if (this.posiciones[1][0] == jugador &&
-      this.posiciones[1][1] == jugador &&
-      this.posiciones[1][2] == jugador) {
-      alert(`Ganó: ${jugador}`);
-    }
-
-    if (this.posiciones[2][0] == jugador &&
-      this.posiciones[2][1] == jugador &&
-      this.posiciones[2][2] == jugador) {
-      alert(`Ganó: ${jugador}`);
-    }
-
-    if (this.posiciones[0][0] == jugador &&
+    if (
       this.posiciones[1][0] == jugador &&
-      this.posiciones[2][0] == jugador) {
-      alert(`Ganó: ${jugador}`);
-    }
-
-    if (this.posiciones[0][1] == jugador &&
       this.posiciones[1][1] == jugador &&
-      this.posiciones[2][1] == jugador) {
-      alert(`Ganó: ${jugador}`);
+      this.posiciones[1][2] == jugador
+    ) {
+      this.anunciarGanador(jugador);
     }
 
-    if (this.posiciones[0][2] == jugador &&
+    if (
+      this.posiciones[2][0] == jugador &&
+      this.posiciones[2][1] == jugador &&
+      this.posiciones[2][2] == jugador
+    ) {
+      this.anunciarGanador(jugador);
+    }
+
+    if (
+      this.posiciones[0][0] == jugador &&
+      this.posiciones[1][0] == jugador &&
+      this.posiciones[2][0] == jugador
+    ) {
+      this.anunciarGanador(jugador);
+    }
+
+    if (
+      this.posiciones[0][1] == jugador &&
+      this.posiciones[1][1] == jugador &&
+      this.posiciones[2][1] == jugador
+    ) {
+      this.anunciarGanador(jugador);
+    }
+
+    if (
+      this.posiciones[0][2] == jugador &&
       this.posiciones[1][2] == jugador &&
-      this.posiciones[2][2] == jugador) {
-      alert(`Ganó: ${jugador}`);
+      this.posiciones[2][2] == jugador
+    ) {
+      this.anunciarGanador(jugador);
     }
 
-    if (this.posiciones[0][0] == jugador &&
+    if (
+      this.posiciones[0][0] == jugador &&
       this.posiciones[1][1] == jugador &&
-      this.posiciones[2][2] == jugador) {
-      alert(`Ganó: ${jugador}`);
+      this.posiciones[2][2] == jugador
+    ) {
+      this.anunciarGanador(jugador);
     }
 
-    if (this.posiciones[0][2] == jugador &&
+    if (
+      this.posiciones[0][2] == jugador &&
       this.posiciones[1][1] == jugador &&
-      this.posiciones[2][0] == jugador) {
-      alert(`Ganó: ${jugador}`);
+      this.posiciones[2][0] == jugador
+    ) {
+      this.anunciarGanador(jugador);
     }
   }
 
@@ -88,8 +106,23 @@ export class TresRayaComponent {
   reiniciar() {
     for (let fila = 0; fila < this.posiciones.length; fila++) {
       for (let columna = 0; columna < this.posiciones.length; columna++) {
-        this.posiciones[fila][columna] = '-';
+        this.posiciones[fila][columna] = ' ';
       }
     }
+    this.jugadorActual = 'X';
+  }
+
+  actualizarMarcador(jugador: string) {
+    if (jugador == 'O') {
+      this.marcadorO++;
+    } else {
+      this.marcadorX++;
+    }
+  }
+
+  anunciarGanador(jugador: string) {
+    this.actualizarMarcador(jugador);
+    alert(`Ganó: ${jugador}`);
+    this.jugadorActual = 'X';
   }
 }

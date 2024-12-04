@@ -1,4 +1,13 @@
-<div style="text-align: center">
+<div class="resultadoDiv">
+  <div>Marcador</div>
+  <div class="signoO">O</div>
+  <div class="marcador">{{ marcadorO }}</div>
+  <div class="marcador">-</div>
+  <div class="marcador">{{ marcadorX }}</div>
+  <div class="signoX">X</div>
+</div>
+
+<div class="tableroDiv">
   <button mat-raised-button (click)="presion(0, 0)" class="casilla">
     {{ posiciones[0][0] }}
   </button>
@@ -29,6 +38,6 @@
     {{ posiciones[2][2] }}
   </button>
 </div>
-<div style="text-align: center">
+<div class="reiniciarDiv">
   <button mat-button color="primary" (click)="reiniciar()">Reiniciar</button>
 </div>
