@@ -1,4 +1,15 @@
-<h2>HELLO</h2>
+<div class="wrapper">
+  <!-- Menú lateral -->
+  <div class="sidebar">
+    <ul>
+      <li><a routerLink="/" routerLinkActive="active">Principal</a></li>
+      <li><a routerLink="/tres-raya" routerLinkActive="active">Tres en raya</a></li>
+      <li><a routerLink="/calc" routerLinkActive="active">Calculadora</a></li>
+    </ul>
+  </div>
 
-<!-- Para ver otros componentes  -->
-<router-outlet></router-outlet>
+  <!-- Contenido principal -->
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

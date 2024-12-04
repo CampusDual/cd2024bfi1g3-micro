@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { CalculadoraComponent } from './components/calculadora/calculadora.component';
 import { TresRayaComponent } from './components/tres-raya/tres-raya.component';
 import { HomeComponent } from './components/home/home.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { HomeComponent } from './components/home/home.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
