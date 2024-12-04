@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TresRayaComponent } from './tres-raya/tres-raya.component';
-import { CalculadoraComponent } from './calculadora/calculadora.component';
+import { TresRayaComponent } from './components/tres-raya/tres-raya.component';
+import { CalculadoraComponent } from './components/calculadora/calculadora.component';
 
 const routes: Routes = [
   {path: 'tres-raya', component: TresRayaComponent},
