@@ -1,10 +1,20 @@
 .calculadora {
-    width: 300px;
-    margin: 50px auto;
-    background-color: #f1f1f1;
+    width: 320px;
+    margin: 0 auto;
     padding: 20px;
+    background-color: #f5f5f5;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
+  }
+  
+  .pantalla {
+    margin-bottom: 20px;
+  }
+  
+  .display {
+    width: 100%;
+    font-size: 2em;
+    text-align: right;
   }
   
   .buttons {
@@ -14,20 +24,7 @@
   }
   
   button {
-    padding: 20px;
-    font-size: 1.5rem;
-    border: 1px solid #ccc;
-    background-color: white;
-    color: black;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  button:active {
-    background-color: #ddd;
+    width: 100%;
+    font-size: 1.5em;
   }
   

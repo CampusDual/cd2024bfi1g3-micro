@@ -30,7 +30,6 @@ export class CalculadoraComponent {
     this.currentInput += '.';
   }
 
-  // Función para calcular el resultado
   calculateResult(): void {
     if (this.previousInput === '' || this.currentInput === '') return;
     let result: number;
