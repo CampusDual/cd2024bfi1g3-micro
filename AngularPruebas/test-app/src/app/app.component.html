@@ -1,15 +1,15 @@
-<div class="wrapper">
+<mat-sidenav-container class="example-container">
   <!-- Menú lateral -->
-  <div class="sidebar">
-    <ul>
-      <li><a routerLink="/" routerLinkActive="active">Principal</a></li>
-      <li><a routerLink="/tres-raya" routerLinkActive="active">Tres en raya</a></li>
-      <li><a routerLink="/calc" routerLinkActive="active">Calculadora</a></li>
-    </ul>
-  </div>
+  <mat-sidenav #sidenav mode="side" opened>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/" routerLinkActive="active">Principal</a>
+      <a mat-list-item routerLink="/tres-raya" routerLinkActive="active">Tres en raya</a>
+      <a mat-list-item routerLink="/calc" routerLinkActive="active">Calculadora</a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-  <!-- Contenido principal -->
-  <div class="content">
+  <!-- Contenido de la derecha -->
+  <mat-sidenav-content>
     <router-outlet></router-outlet>
-  </div>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
