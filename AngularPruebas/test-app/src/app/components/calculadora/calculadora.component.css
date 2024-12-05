@@ -1,25 +1,23 @@
 .calculadora {
-  width: 40%;
+  width: 13.3cm;
   margin: 0 auto;
 }
 
 .pantalla {
-  margin-bottom: 40%;
   margin-bottom: 10px;
 }
 
 .display {
-  width: 7cm;
+  width: 100%;
   text-align: center;
   font-size: 2cm;
-  
+  box-sizing: border-box;
 }
 
 .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1%;
-  
 }
 
 button {
