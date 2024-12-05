@@ -1,10 +1,10 @@
 <div class="resultadoDiv">
   <div>Marcador</div>
-  <div class="signoO">O</div>
-  <div class="marcador">{{ marcadorO }}</div>
-  <div class="marcador">-</div>
-  <div class="marcador">{{ marcadorX }}</div>
   <div class="signoX">X</div>
+  <div class="marcador">{{ marcadorX }}</div>
+  <div class="marcador">-</div>
+  <div class="marcador">{{ marcadorO }}</div>
+  <div class="signoO">O</div>
 </div>
 
 <div class="tableroDiv">
@@ -41,3 +41,8 @@
 <div class="reiniciarDiv">
   <button mat-button color="primary" (click)="reiniciar()">Reiniciar</button>
 </div>
+<app-tarjeta-info
+  *ngIf="ganador"
+  titulo="¡Enhorabuena!"
+  contenido="Ha ganado {{ jugadorActual }}"
+></app-tarjeta-info>

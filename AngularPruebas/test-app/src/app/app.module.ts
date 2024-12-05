@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
+import { TarjetaInfoComponent } from './components/tarjeta-info/tarjeta-info.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
@@ -22,7 +23,8 @@ import { MatCardModule } from '@angular/material/card';
     AppComponent,
     HomeComponent,
     CalculadoraComponent,
-    TresRayaComponent
+    TresRayaComponent,
+    TarjetaInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -33,6 +35,7 @@ import { MatCardModule } from '@angular/material/card';
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
+    MatCardModule,
     FormsModule,
     MatToolbarModule,
     MatGridListModule,
