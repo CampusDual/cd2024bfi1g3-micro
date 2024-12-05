@@ -20,13 +20,16 @@ export class TresRayaComponent {
   jugadorActual = 'X';
   marcadorX: number = 0;
   marcadorO: number = 0;
+  ganador: boolean = false;
 
   presion(fila: number, columna: number) {
-    if (this.casillaLibre(fila, columna)) {
+    if (this.casillaLibre(fila, columna) && !this.ganador) {
       this.posiciones[fila][columna] = this.jugadorActual;
       this.verificarGano('X');
       this.verificarGano('O');
-      this.cambiarJugador();
+      if (!this.ganador) {
+        this.cambiarJugador();
+      }
     }
   }
 
@@ -114,6 +117,7 @@ export class TresRayaComponent {
         this.posiciones[fila][columna] = ' ';
       }
     }
+    this.ganador = false;
     this.jugadorActual = 'X';
   }
 
@@ -127,7 +131,6 @@ export class TresRayaComponent {
 
   anunciarGanador(jugador: string) {
     this.actualizarMarcador(jugador);
-    alert(`Ganó: ${jugador}`);
-    this.jugadorActual = 'X';
+    this.ganador = true;
   }
 }
