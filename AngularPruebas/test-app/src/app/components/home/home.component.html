@@ -1,18 +1,15 @@
 <mat-sidenav-container class="example-container">
-    <!-- Barra lateral que se puede abrir y cerrar dinámicamente -->
-    <mat-sidenav [opened]="sidenavOpened" mode="side">
-      <mat-toolbar>Menu</mat-toolbar>
-  
-      <!-- Botones para cambiar los módulos -->
-      <button mat-button (click)="changeLeftModule('tres-en-raya')">Tres en Raya (Izquierda)</button>
-      <button mat-button (click)="changeLeftModule('calc')">Calculadora (Izquierda)</button>
-      
-      <button mat-button (click)="changeRightModule('tres-en-raya')">Tres en Raya (Derecha)</button>
-      <button mat-button (click)="changeRightModule('calc')">Calculadora (Derecha)</button>
-    </mat-sidenav>
-  
     <!-- Contenido -->
     <mat-sidenav-content>
+      <!-- Barra de botones en la parte superior -->
+      <mat-toolbar color="primary">
+        <button mat-button (click)="changeLeftModule('tres-en-raya')">Tres en Raya (Izquierda)</button>
+        <button mat-button (click)="changeLeftModule('calc')">Calculadora (Izquierda)</button>
+        <button mat-button (click)="changeRightModule('tres-en-raya')">Tres en Raya (Derecha)</button>
+        <button mat-button (click)="changeRightModule('calc')">Calculadora (Derecha)</button>
+      </mat-toolbar>
+  
+      <!-- Contenedor de los módulos -->
       <div class="modules-container">
         <!-- Módulo izquierdo -->
         <mat-card class="module-card">

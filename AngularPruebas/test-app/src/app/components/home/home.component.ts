@@ -6,9 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  // Controlar si el sidenav está abierto
-  sidenavOpened: boolean = true; // Por defecto abierto
-
   // Variables que controlan qué módulo se muestra en cada lado
   leftModule: string = 'tres-en-raya'; // Módulo izquierdo por defecto
   rightModule: string = 'calc';        // Módulo derecho por defecto

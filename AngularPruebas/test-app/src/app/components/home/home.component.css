@@ -1,31 +1,44 @@
-/* Aseguramos que el contenedor principal ocupe toda la altura de la pantalla */
+/* Contenedor principal para el sidenav */
 .example-container {
-    height: 100vh;  /* Hace que el contenedor ocupe el 100% de la altura de la ventana */
+    height: 100vh;  /* Hace que el contenedor ocupe todo el alto de la ventana */
     display: flex;
-    flex-direction: column;
+    flex-direction: column;  /* Disposición en columna para el contenido */
   }
   
-  mat-sidenav-content {
+  /* Estilo para la barra de herramientas con los botones en la parte superior */
+  mat-toolbar {
     display: flex;
-    flex: 1;         /* Hace que el contenido ocupe todo el espacio disponible */
-    justify-content: flex-start;
-    align-items: flex-start;
+    justify-content: space-around;  /* Espaciado entre los botones */
+    padding: 10px;
+    width: 100%;  /* Asegura que ocupe todo el ancho de la pantalla */
   }
   
+  /* Contenedor de los módulos a la izquierda y derecha */
   .modules-container {
-    display: flex;                /* Usamos flexbox para alinear los elementos en fila */
-    justify-content: space-between; /* Distribuye el espacio entre los módulos */
-    gap: 20px;                    /* Espacio entre los módulos */
-    width: 100%;                   /* Aseguramos que ocupe todo el ancho */
-    flex: 1;                       /* Hace que el contenedor ocupe todo el espacio restante */
+    display: flex;
+    justify-content: space-between;  /* Distribuir los módulos de manera equitativa */
     padding: 20px;
+    height: calc(100% - 64px);  /* Asegura que los módulos ocupen el espacio restante */
+    overflow: hidden;
   }
   
+  /* Estilo para cada tarjeta de módulo */
   .module-card {
-    width: 48%;      /* Asegura que cada tarjeta ocupe el 48% del ancho del contenedor */
-    height: 100%;    /* Hace que las tarjetas ocupen toda la altura disponible */
+    width: 48%;  /* Cada módulo ocupará el 48% del ancho de la pantalla */
+    height: 100%;  /* Ocupa todo el alto disponible */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;  /* Ajusta el contenido dentro de la tarjeta */
+    justify-content: center;  /* Centra el contenido verticalmente */
+    align-items: center;  /* Centra el contenido horizontalmente */
+    padding: 10px;
+  }
+  
+  /* Asegura que el contenido dentro del card esté centrado */
+  .mat-card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Asegura que el contenido ocupe todo el alto de la tarjeta */
   }
   
