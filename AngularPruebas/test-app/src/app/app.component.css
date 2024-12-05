@@ -1,13 +1,45 @@
+/* Aseguramos que el contenedor ocupe toda la altura de la pantalla */
 .example-container {
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
   }
   
-  mat-sidenav {
-    width: 250px;
+  /* Menú lateral */
+  .sidenav {
+    width: 250px; 
+    transition: width 0.3s ease; 
+    z-index: 1000;
+  }
+  
+  /* Cuando el menú está colapsado, solo muestra el botón y una pequeña parte */
+  .mat-sidenav-closed .sidenav {
+    width: 60px; 
+    padding: 0; 
+  }
+
+
+  /* Barra superior que ocupa toda la parte superior de la pantalla */
+  .app-toolbar {
+    box-sizing: border-box;
+    flex: 0 0 auto; 
   }
   
   mat-sidenav-content {
-    padding: 16px;
+    margin-top: 0px; 
+    transition: margin-left 0.3s ease; 
   }
   
+ 
+  /* Estilos del botón en la barra superior */
+  button.mat-icon-button {
+    padding: 8px;
+    margin-left: 16px; 
+  }
   
+  .z-index-toolbar {
+    z-index: 1;
+    position: sticky;
+    top: 0;
+  }

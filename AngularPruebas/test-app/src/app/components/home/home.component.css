@@ -1,44 +1,42 @@
-/* Contenedor principal para el sidenav */
 .example-container {
-    height: 100vh;  /* Hace que el contenedor ocupe todo el alto de la ventana */
-    display: flex;
-    flex-direction: column;  /* Disposición en columna para el contenido */
-  }
-  
-  /* Estilo para la barra de herramientas con los botones en la parte superior */
-  mat-toolbar {
-    display: flex;
-    justify-content: space-around;  /* Espaciado entre los botones */
-    padding: 10px;
-    width: 100%;  /* Asegura que ocupe todo el ancho de la pantalla */
-  }
-  
-  /* Contenedor de los módulos a la izquierda y derecha */
-  .modules-container {
-    display: flex;
-    justify-content: space-between;  /* Distribuir los módulos de manera equitativa */
-    padding: 20px;
-    height: calc(100% - 64px);  /* Asegura que los módulos ocupen el espacio restante */
-    overflow: hidden;
-  }
-  
-  /* Estilo para cada tarjeta de módulo */
-  .module-card {
-    width: 48%;  /* Cada módulo ocupará el 48% del ancho de la pantalla */
-    height: 100%;  /* Ocupa todo el alto disponible */
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;  /* Centra el contenido verticalmente */
-    align-items: center;  /* Centra el contenido horizontalmente */
+  }
+  
+  mat-toolbar {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    width: 100%;
+  }
+  
+  .modules-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    height: calc(100% - 64px);
+  }
+  
+  .module-card {
+    width: 48%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 10px;
   }
   
-  /* Asegura que el contenido dentro del card esté centrado */
+  .module-visible {
+    display: block;
+  }
+  
   .mat-card-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%; /* Asegura que el contenido ocupe todo el alto de la tarjeta */
+    height: 100%;
   }
   

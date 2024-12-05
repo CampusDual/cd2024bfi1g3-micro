@@ -6,9 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  // Variables que controlan qué módulo se muestra en cada lado
-  leftModule: string = 'tres-en-raya'; // Módulo izquierdo por defecto
-  rightModule: string = 'calc';        // Módulo derecho por defecto
+  // Variables para manejar los módulos
+  leftModule: string = 'tres-en-raya';  // Módulo izquierdo por defecto
+  rightModule: string = 'calc';         // Módulo derecho por defecto
 
   // Cambia el módulo del lado izquierdo
   changeLeftModule(module: string) {
