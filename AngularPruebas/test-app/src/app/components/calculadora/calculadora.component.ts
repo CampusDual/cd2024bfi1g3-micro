@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-calculadora',
@@ -6,6 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./calculadora.component.css']
 })
 export class CalculadoraComponent {
+  @Output() moduleChange = new EventEmitter<string>();
+  changeModule(module: string) {
+    this.moduleChange.emit(module);
+  }
   display: string = '';        
   previousInput: string = ''; 
   currentInput: string = '';  

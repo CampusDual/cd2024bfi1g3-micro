@@ -6,5 +6,20 @@ import { Component } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  videoUrl: string = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Cambia el enlace por el de tu video
+  // Controlar si el sidenav está abierto
+  sidenavOpened: boolean = true; // Por defecto abierto
+
+  // Variables que controlan qué módulo se muestra en cada lado
+  leftModule: string = 'tres-en-raya'; // Módulo izquierdo por defecto
+  rightModule: string = 'calc';        // Módulo derecho por defecto
+
+  // Cambia el módulo del lado izquierdo
+  changeLeftModule(module: string) {
+    this.leftModule = module;
+  }
+
+  // Cambia el módulo del lado derecho
+  changeRightModule(module: string) {
+    this.rightModule = module;
+  }
 }

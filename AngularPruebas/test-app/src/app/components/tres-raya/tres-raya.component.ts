@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-tres-raya',
@@ -6,6 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./tres-raya.component.css'],
 })
 export class TresRayaComponent {
+  @Output() moduleChange = new EventEmitter<string>();
+  changeModule(module: string) {
+    this.moduleChange.emit(module);
+  }
   posiciones = [
     [' ', ' ', ' '],
     [' ', ' ', ' '],

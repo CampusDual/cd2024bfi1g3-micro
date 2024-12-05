@@ -1,14 +1,49 @@
-<div class="home-container">
-    <h1>Bienvenido a Home</h1>
-    <div class="modules-container">
-      <!-- Área para Tres en Raya -->
-      <div class="module">
-        <router-outlet name="tres-en-raya"></router-outlet>
-      </div>
+<mat-sidenav-container class="example-container">
+    <!-- Barra lateral que se puede abrir y cerrar dinámicamente -->
+    <mat-sidenav [opened]="sidenavOpened" mode="side">
+      <mat-toolbar>Menu</mat-toolbar>
   
-      <!-- Área para la Calculadora -->
-      <div class="module">
-        <router-outlet name="calc"></router-outlet>
+      <!-- Botones para cambiar los módulos -->
+      <button mat-button (click)="changeLeftModule('tres-en-raya')">Tres en Raya (Izquierda)</button>
+      <button mat-button (click)="changeLeftModule('calc')">Calculadora (Izquierda)</button>
+      
+      <button mat-button (click)="changeRightModule('tres-en-raya')">Tres en Raya (Derecha)</button>
+      <button mat-button (click)="changeRightModule('calc')">Calculadora (Derecha)</button>
+    </mat-sidenav>
+  
+    <!-- Contenido -->
+    <mat-sidenav-content>
+      <div class="modules-container">
+        <!-- Módulo izquierdo -->
+        <mat-card class="module-card">
+          <mat-card-header>
+            <mat-card-title>{{ leftModule === 'tres-en-raya' ? 'Tres en Raya' : 'Calculadora' }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ng-container *ngIf="leftModule === 'tres-en-raya'">
+              <app-tres-raya></app-tres-raya>
+            </ng-container>
+            <ng-container *ngIf="leftModule === 'calc'">
+              <app-calculadora></app-calculadora>
+            </ng-container>
+          </mat-card-content>
+        </mat-card>
+  
+        <!-- Módulo derecho -->
+        <mat-card class="module-card">
+          <mat-card-header>
+            <mat-card-title>{{ rightModule === 'tres-en-raya' ? 'Tres en Raya' : 'Calculadora' }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ng-container *ngIf="rightModule === 'tres-en-raya'">
+              <app-tres-raya></app-tres-raya>
+            </ng-container>
+            <ng-container *ngIf="rightModule === 'calc'">
+              <app-calculadora></app-calculadora>
+            </ng-container>
+          </mat-card-content>
+        </mat-card>
       </div>
-    </div>
-  </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  
