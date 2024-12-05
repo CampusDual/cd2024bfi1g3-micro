@@ -17,6 +17,8 @@ import { TarjetaInfoComponent } from './components/tarjeta-info/tarjeta-info.com
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
+import { PopupInfoComponent } from './components/popup-info/popup-info.component';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
@@ -25,7 +27,8 @@ import { MatInputModule } from '@angular/material/input';
     HomeComponent,
     CalculadoraComponent,
     TresRayaComponent,
-    TarjetaInfoComponent
+    TarjetaInfoComponent,
+    PopupInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,7 @@ import { MatInputModule } from '@angular/material/input';
     FormsModule,
     MatToolbarModule,
     MatGridListModule,
-    MatCardModule,
+    MatDialogModule,
     MatInputModule
   ],
   providers: [],

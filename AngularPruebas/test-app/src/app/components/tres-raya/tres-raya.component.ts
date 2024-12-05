@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { EventEmitter, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { PopupInfoComponent } from '../popup-info/popup-info.component';
 
 @Component({
   selector: 'app-tres-raya',
@@ -11,6 +13,9 @@ export class TresRayaComponent {
   changeModule(module: string) {
     this.moduleChange.emit(module);
   }
+
+  constructor(public dialog: MatDialog) {}
+
   posiciones = [
     [' ', ' ', ' '],
     [' ', ' ', ' '],
@@ -131,6 +136,20 @@ export class TresRayaComponent {
 
   anunciarGanador(jugador: string) {
     this.actualizarMarcador(jugador);
+    this.openDialog(jugador);
     this.ganador = true;
+  }
+
+  openDialog(jugador:string) {
+    const dialogRef = this.dialog.open(PopupInfoComponent, {
+      data: {
+        title: '¡Enhorabuena!',
+        content: `Ha ganado ${jugador}`,
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .subscribe((result) => console.log('Dialog Result: ', result));
   }
 }
