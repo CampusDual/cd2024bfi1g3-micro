@@ -1,6 +1,6 @@
 #include <WiFi.h>
+#include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h> // Librería ESPAsyncWebServer
 
 // Credenciales del AP
 const char *ssid = "yourAp";
@@ -63,3 +63,5 @@ void setup() {
   // Iniciar el servidor
   server.begin();
 }
+
+void loop(){}
