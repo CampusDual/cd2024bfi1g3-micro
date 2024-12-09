@@ -18,6 +18,7 @@ float hr;
 
 void setup() {
   Serial.begin(115200);
+  EEPROM.begin(512);
 
   while(Serial == false){};                                   // Esperamos a que el Serial se inicie
   Serial.println("Lecturas de temperatura(ºC) y humedad relativa");
@@ -89,6 +90,7 @@ void errorDecoder(SHTC3_Status_TypeDef message)               // Imprime los sta
 //se debe guardar primero la posicion 1, luego la posicion 2, etc..
 void escribir(String frase, int posicion){
   byte num;
+  int direccion;
   for(int i=0;i<=posicion;i++){
     if(i==0){
       direccion=0;
@@ -110,6 +112,7 @@ void escribir(String frase, int posicion){
 //Se debe pasar la posicion que se quiere leer
 String leer(int posicion){
   byte num;
+  int direccion;
   String resultado="";
   for(int i=0;i<=posicion;i++){
     if(i==0){

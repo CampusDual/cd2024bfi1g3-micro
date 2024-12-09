@@ -36,6 +36,7 @@ void loop() {
 
 void escribir(String frase, int posicion){
   byte num;
+  int direccion;
   for(int i=0;i<=posicion;i++){
     if(i==0){
       direccion=0;
@@ -56,6 +57,7 @@ void escribir(String frase, int posicion){
 
 String leer(int posicion){
   byte num;
+  int direccion;
   String resultado="";
   for(int i=0;i<=posicion;i++){
     if(i==0){
