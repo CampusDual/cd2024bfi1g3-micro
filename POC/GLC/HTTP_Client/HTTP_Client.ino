@@ -1,23 +1,29 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include "SparkFun_SHTC3.h"
 
-const char* ssid = "ssid";
-const char* password = "password";
+SHTC3 mySHTC3;                                                // Instancia de SHTC3 class
 
-//Your Domain name with URL path or IP address with path
-const char* serverName = "http://192.168.1.X:8000";
+const char* ssid = "MIWIFI_RkKN";
+const char* password = "G5dazapS";
 
-// the following variables are unsigned longs because the time, measured in
-// milliseconds, will quickly become a bigger number than can be stored in an int.
+const char* serverName = "http://192.168.1.128:8000";
+
 unsigned long lastTime = 0;
-// Timer set to 10 minutes (600000)
-//unsigned long timerDelay = 600000;
-// Set timer to 5 seconds (5000)
 unsigned long timerDelay = 5000;
+
+float degC;
+float hr;
 
 void setup() {
   Serial.begin(115200);
 
+  while(Serial == false){};                                   // Esperamos a que el Serial se inicie
+  Serial.println("Lecturas de temperatura(ºC) y humedad relativa");
+  Wire.begin();                                               // Iniciamos la librería Wire, que permite comunicación vía I2C
+  Serial.print("Iniciando sensor. Status: ");
+  errorDecoder(mySHTC3.begin());                              // Iniciamos el sensor
+  
   WiFi.begin(ssid, password);
   Serial.println("Connecting");
   while(WiFi.status() != WL_CONNECTED) {
@@ -30,7 +36,6 @@ void setup() {
 }
 
 void loop() {
-  //Send an HTTP POST request every 10 minutes
   if ((millis() - lastTime) > timerDelay) {
     //Check WiFi connection status
     if(WiFi.status()== WL_CONNECTED){
@@ -40,23 +45,19 @@ void loop() {
       // Your Domain name with URL path or IP address with path
       http.begin(client, serverName);
       
-      // If you need Node-RED/server authentication, insert user and password below
-      //http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
-      
       // Specify content-type header
       http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+      mySHTC3.update();                                       // Recoger medidas y actualizar valores de Tª y RH
+
+      degC = mySHTC3.toDegC();
+      hr = mySHTC3.toPercent();
+
       // Data to send with HTTP POST
-      String httpRequestData = "api_key=tPmAT5Ab3j7F9&sensor=BME280&value1=24.25&value2=49.54&value3=1005.14";           
+      String httpRequestData = "tempC=" + String(degC) + "&hr=" + String(hr);           
       // Send HTTP POST request
       int httpResponseCode = http.POST(httpRequestData);
-      
-      // If you need an HTTP request with a content type: application/json, use the following:
-      //http.addHeader("Content-Type", "application/json");
-      //int httpResponseCode = http.POST("{\"api_key\":\"tPmAT5Ab3j7F9\",\"sensor\":\"BME280\",\"value1\":\"24.25\",\"value2\":\"49.54\",\"value3\":\"1005.14\"}");
-
-      // If you need an HTTP request with a content type: text/plain
-      //http.addHeader("Content-Type", "text/plain");
-      //int httpResponseCode = http.POST("Hello, World!");
      
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
@@ -68,5 +69,16 @@ void loop() {
       Serial.println("WiFi Disconnected");
     }
     lastTime = millis();
+  }
+}
+
+void errorDecoder(SHTC3_Status_TypeDef message)               // Imprime los status de SHTC3 de forma legible
+{
+  switch(message)
+  {
+    case SHTC3_Status_Nominal : Serial.print("Nominal"); break;
+    case SHTC3_Status_Error : Serial.print("Error"); break;
+    case SHTC3_Status_CRC_Fail : Serial.print("CRC Fail"); break;
+    default : Serial.print("Código de status desconocido"); break;
   }
 }
