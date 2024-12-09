@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <EEPROM.h>
 #include "SparkFun_SHTC3.h"
 
 SHTC3 mySHTC3;                                                // Instancia de SHTC3 class
@@ -81,4 +82,53 @@ void errorDecoder(SHTC3_Status_TypeDef message)               // Imprime los sta
     case SHTC3_Status_CRC_Fail : Serial.print("CRC Fail"); break;
     default : Serial.print("Código de status desconocido"); break;
   }
+}
+
+//Se debe pasar el valor en string a guardar y la posicion donde se quiere que se guarde
+//¡¡IMPORTANTE!! Actualmente no se puede guardar en posiciones que no sean consecutivas, ya que sobrescribiria datos. Es decir
+//se debe guardar primero la posicion 1, luego la posicion 2, etc..
+void escribir(String frase, int posicion){
+  byte num;
+  for(int i=0;i<=posicion;i++){
+    if(i==0){
+      direccion=0;
+    }else{
+      EEPROM.get(direccion,num);
+      direccion+=num+1;
+    }
+  }
+  EEPROM.put( direccion, frase.length()); 
+  direccion++;
+  for(int i=0;i<frase.length();i++){
+    EEPROM.put( direccion, frase.charAt(i)); 
+    direccion++;
+  }
+  EEPROM.commit();
+  
+}
+
+//Se debe pasar la posicion que se quiere leer
+String leer(int posicion){
+  byte num;
+  String resultado="";
+  for(int i=0;i<=posicion;i++){
+    if(i==0){
+      direccion=0;
+    }else{
+      EEPROM.get(direccion,num);
+      direccion+=num+1;
+    }
+  }
+  //Obtener tamaño de dato a leer
+  EEPROM.get(direccion,num);
+  direccion++;
+
+  for (int i = 0; i < num; i++) {
+    char c;
+    EEPROM.get(direccion, c);
+    direccion++;
+    resultado += c;
+  }
+
+ return resultado;
 }
