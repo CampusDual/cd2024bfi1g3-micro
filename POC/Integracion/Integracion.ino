@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <EEPROM.h>
+#include <Preferences.h>
 #include "SparkFun_SHTC3.h"
 
 SHTC3 mySHTC3;                                                // Instancia de SHTC3 class
@@ -13,12 +13,14 @@ const char* serverName = "http://192.168.1.128:8000";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
 
+Preferences datosPersistentes;
+
 float degC;
 float hr;
 
 void setup() {
   Serial.begin(115200);
-  EEPROM.begin(512);
+   datosPersistentes.begin("datos", false);
 
   while(Serial == false){};                                   // Esperamos a que el Serial se inicie
   Serial.println("Lecturas de temperatura(ºC) y humedad relativa");
@@ -72,6 +74,7 @@ void loop() {
     }
     lastTime = millis();
   }
+
 }
 
 void errorDecoder(SHTC3_Status_TypeDef message)               // Imprime los status de SHTC3 de forma legible
@@ -85,53 +88,14 @@ void errorDecoder(SHTC3_Status_TypeDef message)               // Imprime los sta
   }
 }
 
-//Se debe pasar el valor en string a guardar y la posicion donde se quiere que se guarde
-//¡¡IMPORTANTE!! Actualmente no se puede guardar en posiciones que no sean consecutivas, ya que sobrescribiria datos. Es decir
-//se debe guardar primero la posicion 1, luego la posicion 2, etc..
-void escribir(String frase, int posicion){
-  byte num;
-  int direccion;
-  for(int i=0;i<=posicion;i++){
-    if(i==0){
-      direccion=0;
-    }else{
-      EEPROM.get(direccion,num);
-      direccion+=num+1;
-    }
-  }
-  EEPROM.put( direccion, frase.length()); 
-  direccion++;
-  for(int i=0;i<frase.length();i++){
-    EEPROM.put( direccion, frase.charAt(i)); 
-    direccion++;
-  }
-  EEPROM.commit();
-  
+//Se debe pasar la clave escrita entre "" y el dato a guardar en String.
+void escribir(const char *key, String dato){
+  datosPersistentes.putString(key, dato);
+  datosPersistentes.end();
 }
 
-//Se debe pasar la posicion que se quiere leer
-String leer(int posicion){
-  byte num;
-  int direccion;
-  String resultado="";
-  for(int i=0;i<=posicion;i++){
-    if(i==0){
-      direccion=0;
-    }else{
-      EEPROM.get(direccion,num);
-      direccion+=num+1;
-    }
-  }
-  //Obtener tamaño de dato a leer
-  EEPROM.get(direccion,num);
-  direccion++;
-
-  for (int i = 0; i < num; i++) {
-    char c;
-    EEPROM.get(direccion, c);
-    direccion++;
-    resultado += c;
-  }
-
- return resultado;
+//Se debe pasar la clave a buscar escrita entre ""
+String leer(const char *key){
+  //El segundo parametro, es lo que devuelve si no encuentra la key que se le pasa
+  return datosPersistentes.getString(key, "No encontrado");
 }
