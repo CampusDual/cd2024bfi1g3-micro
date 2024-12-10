@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include <esp_wifi.h>
 #include <HTTPClient.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
@@ -10,6 +11,7 @@ SHTC3 mySHTC3;  // Instancia de SHTC3 class
 // Credenciales de WiFi
 String ssid = "";
 String password = "";
+String mac = "";
 
 // Credenciales del AP
 const char* apSSID = "ESP32_AP";
@@ -38,6 +40,7 @@ void setup() {
   password = leer("password");
   Serial.println("SSID guardado: " + ssid);
   Serial.println("Contraseña guardada: " + password);
+  Serial.println("MAC guardada: " + mac);
 
   if (ssid != "" && password != "") {
     conectarWiFi();
@@ -45,10 +48,13 @@ void setup() {
     iniciarModoAP();
   }
 
+  readMacAddress(); // Guardar la MAC si no está ya en la EEPROM
+
   // Configurar sensor
   Wire.begin();
   Serial.print("Iniciando sensor. Status: ");
   errorDecoder(mySHTC3.begin());
+  Serial.println();
 }
 
 void loop() {
@@ -60,7 +66,7 @@ void loop() {
     degC = mySHTC3.toDegC();
     hr = mySHTC3.toPercent();
 
-    String httpRequestData = "tempC=" + String(degC) + "&hr=" + String(hr);
+    String httpRequestData = "tempC=" + String(degC) + "&hr=" + String(hr) + "&mac=" + String(mac);
     http.begin(client, serverName);
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
@@ -128,7 +134,7 @@ void iniciarModoAP() {
       <!DOCTYPE html>
       <html>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset=“utf-8”>
       </head>
       <body>
         <h1>Configuración WiFi</h1>
@@ -155,6 +161,7 @@ void iniciarModoAP() {
 
       escribir("ssid", ssid);
       escribir("password", password);
+      datosPersistentes.end();
 
       request->send(200, "text/html", "<h1>Credenciales guardadas. Reiniciando...</h1>");
       delay(1000);
@@ -165,4 +172,35 @@ void iniciarModoAP() {
   });
 
   server.begin();
+}
+
+void readMacAddress(){
+  // Verifica si ya hay una MAC guardada
+  mac = leer("mac");
+  if (mac != "") {
+    Serial.println("MAC ya guardada en EEPROM: " + mac);
+    return; // Si ya está guardada, no hacemos nada
+  }
+
+  uint8_t baseMac[6];
+  esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac); // Obtén la MAC del ESP32 en modo estación
+  if (ret == ESP_OK) {
+    // Convierte la MAC a un formato estándar
+    String macAddress = String(baseMac[0], HEX) + ":" +
+                        String(baseMac[1], HEX) + ":" +
+                        String(baseMac[2], HEX) + ":" +
+                        String(baseMac[3], HEX) + ":" +
+                        String(baseMac[4], HEX) + ":" +
+                        String(baseMac[5], HEX);
+
+    macAddress.toUpperCase(); // Convertir a mayúsculas para un formato estándar
+    Serial.println("Dirección MAC leída: " + macAddress);
+
+    // Guarda la MAC en la EEPROM
+    escribir("mac", macAddress);
+    Serial.println("MAC guardada en EEPROM.");
+    mac = macAddress; // Actualiza la variable global para otros usos
+  } else {
+    Serial.println("Error al leer la dirección MAC");
+  }
 }
