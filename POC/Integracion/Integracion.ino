@@ -12,6 +12,7 @@ SHTC3 mySHTC3;  // Instancia de SHTC3 class
 String ssid = "";
 String password = "";
 String mac = "";
+String ipServer = "";
 
 // Credenciales del AP
 const char* apSSID = "ESP32_AP";
@@ -22,7 +23,7 @@ AsyncWebServer server(80);
 Preferences datosPersistentes;
 
 // Datos del servidor remoto
-const char* serverName = "http://192.168.1.128:8000";
+String serverName = "http://0.0.0.0:8000";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
 
@@ -31,18 +32,21 @@ float hr;
 
 void setup() {
   Serial.begin(115200);
-
-  // Inicializar memoria persistente
   datosPersistentes.begin("datos", false);
 
   // Leer credenciales guardadas
   ssid = leer("ssid");
   password = leer("password");
+  ipServer = leer("ipServer");
   Serial.println("SSID guardado: " + ssid);
   Serial.println("Contraseña guardada: " + password);
   Serial.println("MAC guardada: " + mac);
+  Serial.println("IP Servidor remoto guardado: " + ipServer);
 
-  if (ssid != "" && password != "") {
+  //Modificar serverName
+  serverName = "http://" + ipServer + ":8000";
+
+  if (ssid != "" && password != "" && ipServer != "") {
     conectarWiFi();
   } else {
     iniciarModoAP();
@@ -94,7 +98,9 @@ void errorDecoder(SHTC3_Status_TypeDef message)  // Imprime los status de SHTC3 
 
 //Se debe pasar la clave escrita entre "" y el dato a guardar en String.
 void escribir(const char* key, String dato) {
+  datosPersistentes.begin("datos", false);
   datosPersistentes.putString(key, dato);
+  datosPersistentes.end();
 }
 
 //Se debe pasar la clave a buscar escrita entre ""
@@ -143,6 +149,8 @@ void iniciarModoAP() {
           <input type="text" id="ssid" name="ssid" required><br>
           <label for="pass">Password:</label>
           <input type="password" id="pass" name="pass" required><br>
+          <label for="ip_remote">IP Server remote:</label>
+          <input type="text" id="ip_remote" name="ip_remote" required><br>
           <input type="submit" value="Guardar">
         </form>
       </body>
@@ -154,13 +162,16 @@ void iniciarModoAP() {
     if (request->hasParam("ssid", true) && request->hasParam("pass", true)) {
       ssid = request->getParam("ssid", true)->value();
       password = request->getParam("pass", true)->value();
+      ipServer = request->getParam("ip_remote", true)->value();
 
       Serial.println("Credenciales recibidas:");
       Serial.println("SSID: " + ssid);
       Serial.println("Password: " + password);
+      Serial.println("IP Servidor remoto: " + ipServer);
 
       escribir("ssid", ssid);
       escribir("password", password);
+      escribir("ipServer", ipServer);
       datosPersistentes.end();
 
       request->send(200, "text/html", "<h1>Credenciales guardadas. Reiniciando...</h1>");
