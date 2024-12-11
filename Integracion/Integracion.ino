@@ -43,7 +43,6 @@ void setup() {
   Serial.println("MAC guardada: " + mac);
   Serial.println("IP Servidor remoto guardado: " + ipServer);
 
-  //Modificar serverName
   serverName = "http://" + ipServer + ":8000";
 
   if (ssid != "" && password != "" && ipServer != "") {
@@ -66,17 +65,26 @@ void loop() {
     WiFiClient client;
     HTTPClient http;
 
+    // Actualizar los valores del sensor
     mySHTC3.update();
-    degC = mySHTC3.toDegC();
-    hr = mySHTC3.toPercent();
+    degC = mySHTC3.toDegC();  // Temperatura en grados Celsius
+    hr = mySHTC3.toPercent(); // Humedad relativa en porcentaje
 
-    String httpRequestData = "tempC=" + String(degC) + "&hr=" + String(hr) + "&mac=" + String(mac);
+    // Crear JSON con decimales
+    String jsonData = "{\"m\": \"" + mac + "\", \"t\": " + String(degC, 2) + ", \"h\": " + String(hr, 2) + "}";
+
+    // Configurar la solicitud HTTP
     http.begin(client, serverName);
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    http.addHeader("Content-Type", "application/json");
 
-    int httpResponseCode = http.POST(httpRequestData);
+    // Enviar el POST con JSON
+    int httpResponseCode = http.POST(jsonData);
+
+    // Mostrar el código de respuesta HTTP
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
+
+    // Finalizar la conexión HTTP
     http.end();
 
     lastTime = millis();
@@ -85,6 +93,7 @@ void loop() {
     conectarWiFi();
   }
 }
+
 
 void errorDecoder(SHTC3_Status_TypeDef message)  // Imprime los status de SHTC3 de forma legible
 {
