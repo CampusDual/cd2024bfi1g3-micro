@@ -92,7 +92,8 @@ void loop() {
     hr = mySHTC3.toPercent(); // Humedad relativa en porcentaje
 
     
-    String jsonData = "{\"data\": {\"DEV_MAC\": \"" + mac + "\", \"ME_TEMP\": " + String(degC, 2) + ", \"ME_HUMIDITY\": " + String(hr, 2) + "}}";
+    String jsonData = "{\"data\": {\"DEV_MAC\": \"" + mac + "\", \"ME_TEMP\": " + degC + ", \"ME_HUMIDITY\": " + hr + "}}";
+    Serial.println(jsonData);
 
     // Configurar la solicitud HTTP
     http.begin(client, serverName);
