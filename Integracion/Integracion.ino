@@ -30,7 +30,7 @@ AsyncWebServer server(80);
 Preferences datosPersistentes;
 
 // Datos del servidor remoto
-String serverName = "http://0.0.0.0:8000";
+String serverName = "http://localhost:8080/measurements/measurements";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 5000;
 
@@ -52,7 +52,7 @@ void setup() {
   Serial.println("IP Servidor remoto guardado: " + ipServer);
   Serial.println("Modo AP manual: " + modoAP);
 
-  serverName = "http://" + ipServer + ":8000";
+  serverName = "http://" + ipServer + ":8080/measurements/measurements";
 
   if(modoAP.indexOf("ON") != -1){
     ssid = "";
