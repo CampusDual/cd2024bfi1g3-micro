@@ -91,8 +91,8 @@ void loop() {
     degC = mySHTC3.toDegC();  // Temperatura en grados Celsius
     hr = mySHTC3.toPercent(); // Humedad relativa en porcentaje
 
-    // Crear JSON con decimales
-    String jsonData = "{\"m\": \"" + mac + "\", \"t\": " + String(degC, 2) + ", \"h\": " + String(hr, 2) + "}";
+    // Crear JSON con la nueva estructura
+    String jsonData = "{\"data\": {\"DEV_MAC\": \"" + mac + "\", \"ME_TEMP\": " + String(degC, 2) + ", \"ME_HUMIDITY\": " + String(hr, 2) + "}}";
 
     // Configurar la solicitud HTTP
     http.begin(client, serverName);
@@ -130,6 +130,7 @@ void loop() {
     isButtonPressed = false;
   }
 }
+
 
 
 void errorDecoder(SHTC3_Status_TypeDef message)  // Imprime los status de SHTC3 de forma legible
