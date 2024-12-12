@@ -6,6 +6,12 @@
 #include <Preferences.h>
 #include "SparkFun_SHTC3.h"
 
+#define LED_PIN 8
+#define BOOT_BUTTON_PIN 9
+#define PRESS_DURATION_BOOT 3000
+unsigned long buttonPressStart = 0; // Tiempo que esta el boton presionado
+bool isButtonPressed = false;
+
 SHTC3 mySHTC3;  // Instancia de SHTC3 class
 
 // Credenciales de WiFi
@@ -13,6 +19,7 @@ String ssid = "";
 String password = "";
 String mac = "";
 String ipServer = "";
+String modoAP = "";
 
 // Credenciales del AP
 const char* apSSID = "ESP32_AP";
@@ -38,12 +45,20 @@ void setup() {
   ssid = leer("ssid");
   password = leer("password");
   ipServer = leer("ipServer");
+  modoAP = leer("modoAP");
   Serial.println("SSID guardado: " + ssid);
   Serial.println("Contraseña guardada: " + password);
   Serial.println("MAC guardada: " + mac);
   Serial.println("IP Servidor remoto guardado: " + ipServer);
+  Serial.println("Modo AP manual: " + modoAP);
 
   serverName = "http://" + ipServer + ":8000";
+
+  if(modoAP.indexOf("ON") != -1){
+    ssid = "";
+    password = "";
+    ipServer = "";
+  }
 
   if (ssid != "" && password != "" && ipServer != "") {
     conectarWiFi();
@@ -58,6 +73,12 @@ void setup() {
   Serial.print("Iniciando sensor. Status: ");
   errorDecoder(mySHTC3.begin());
   Serial.println();
+
+  //Configuracion boton boot
+  pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP);
+  // Configura el pin del LED como salida
+  pinMode(LED_PIN, OUTPUT);               
+  digitalWrite(LED_PIN, LOW);
 }
 
 void loop() {
@@ -91,6 +112,22 @@ void loop() {
   } else if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi desconectado. Intentando reconectar...");
     conectarWiFi();
+  }
+
+  if (digitalRead(BOOT_BUTTON_PIN) == LOW) { // El botón está presionado
+    if (!isButtonPressed) {
+      buttonPressStart = millis(); // Guarda el tiempo actual
+      isButtonPressed = true;
+    } else if (millis() - buttonPressStart >= PRESS_DURATION_BOOT) {
+      Serial.println("Volviendo a modo AP");
+      modoAP = "ON";
+      escribir("modoAP", modoAP);      
+      ESP.restart();
+      isButtonPressed = false; // Evita múltiples mensajes
+    }
+  } else {
+    // El botón no está presionado, resetea el estado
+    isButtonPressed = false;
   }
 }
 
@@ -140,6 +177,9 @@ void conectarWiFi() {
 }
 
 void iniciarModoAP() {
+  //Encender LED cuando esta en modo AP
+  digitalWrite(LED_PIN, HIGH);
+
   WiFi.softAP(apSSID, apPassword);
   Serial.print("Dirección IP del AP: ");
   Serial.println(WiFi.softAPIP());
@@ -181,7 +221,9 @@ void iniciarModoAP() {
       escribir("ssid", ssid);
       escribir("password", password);
       escribir("ipServer", ipServer);
-      datosPersistentes.end();
+      modoAP = "OFF";
+      escribir("modoAP", modoAP);   
+      //datosPersistentes.end();
 
       request->send(200, "text/html", "<h1>Credenciales guardadas. Reiniciando...</h1>");
       delay(1000);
