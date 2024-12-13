@@ -52,7 +52,7 @@ void setup() {
   Serial.println("IP Servidor remoto guardado: " + ipServer);
   Serial.println("Modo AP manual: " + modoAP);
 
-  serverName = "http://" + ipServer + ":8080/measurements/measurements";
+  serverName = ipServer + "/measurements/measurements";
 
   if(modoAP.indexOf("ON") != -1){
     ssid = "";
@@ -93,7 +93,6 @@ void loop() {
 
     
     String jsonData = "{\"data\": {\"DEV_MAC\": \"" + mac + "\", \"ME_TEMP\": " + degC + ", \"ME_HUMIDITY\": " + hr + "}}";
-    Serial.println(jsonData);
 
     // Configurar la solicitud HTTP
     http.begin(client, serverName);
@@ -201,6 +200,7 @@ void iniciarModoAP() {
           <label for="pass">Password:</label>
           <input type="password" id="pass" name="pass" required><br>
           <label for="ip_remote">IP Server remote:</label>
+          <label>Ej: http://url:8080</label>
           <input type="text" id="ip_remote" name="ip_remote" required><br>
           <input type="submit" value="Guardar">
         </form>
