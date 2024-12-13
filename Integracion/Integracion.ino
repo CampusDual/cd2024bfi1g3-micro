@@ -32,7 +32,8 @@ Preferences datosPersistentes;
 // Datos del servidor remoto
 String serverName = "http://localhost:8080/measurements/measurements";
 unsigned long lastTime = 0;
-unsigned long timerDelay = 5000;
+unsigned int minutos = 15;
+unsigned long timerDelay = 60000 * minutos;
 
 float degC;
 float hr;
@@ -97,6 +98,7 @@ void loop() {
     // Configurar la solicitud HTTP
     http.begin(client, serverName);
     http.addHeader("Content-Type", "application/json");
+    Serial.println(serverName);
 
     // Enviar el POST con JSON
     int httpResponseCode = http.POST(jsonData);
