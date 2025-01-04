@@ -31,9 +31,9 @@ Preferences datosPersistentes;
 
 // Datos del servidor remoto
 String serverName = "http://localhost:8080/measurements/measurements";
-unsigned long lastTime = 0;
 unsigned int minutos = 15;
 unsigned long timerDelay = 60000 * minutos;
+unsigned long lastTime = timerDelay*(-1); //Se incializa a un valor negativo, para cuando se enciende el dispositivo, no haya que esperar el tiempo total para el primer envio.
 
 float degC;
 float hr;
