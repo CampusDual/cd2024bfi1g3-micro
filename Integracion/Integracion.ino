@@ -97,6 +97,7 @@ void loop() {
 
     // Configurar la solicitud HTTP
     http.begin(client, serverName);
+    http.addHeader("Authorization", "Basic YWRtaW5NaWNyb3M6YWRtaW5taWNyb3MxMjM=");
     http.addHeader("Content-Type", "application/json");
     Serial.println(serverName);
 
