@@ -30,9 +30,9 @@ AsyncWebServer server(80);
 Preferences datosPersistentes;
 
 // Datos del servidor remoto
-String serverName = "http://localhost:8080/measurements/measurements";
+String serverName = "http://192.168.18.10:8080/measurements/measurements";
 unsigned long lastTime = 0;
-unsigned long timerDelay = 5000;
+unsigned long timerDelay = 60000;
 
 float degC;
 float hr;
@@ -54,7 +54,7 @@ void setup() {
 
   serverName = ipServer + "/measurements/measurements";
 
-  if(modoAP.indexOf("ON") != -1){
+  if(modoAP.indexOf("ON") !=-1){
     ssid = "";
     password = "";
     ipServer = "";
@@ -91,17 +91,21 @@ void loop() {
     degC = mySHTC3.toDegC();  // Temperatura en grados Celsius
     hr = mySHTC3.toPercent(); // Humedad relativa en porcentaje
 
-    
     String jsonData = "{\"data\": {\"DEV_MAC\": \"" + mac + "\", \"ME_TEMP\": " + degC + ", \"ME_HUMIDITY\": " + hr + "}}";
 
     // Configurar la solicitud HTTP
     http.begin(client, serverName);
+    // Agregar el encabezado de autorización
+    http.addHeader("Authorization", "Basic YWRtaW5NaWNyb3M6YWRtaW5taWNyb3MxMjM=");
     http.addHeader("Content-Type", "application/json");
+
+    
 
     // Enviar el POST con JSON
     int httpResponseCode = http.POST(jsonData);
-
-    // Mostrar el código de respuesta HTTP
+    Serial.print("Enviando POST a: ");
+    Serial.println(serverName);
+    
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
 
@@ -130,6 +134,7 @@ void loop() {
     isButtonPressed = false;
   }
 }
+
 
 
 
