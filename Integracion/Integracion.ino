@@ -27,7 +27,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuración</title>
+  <title>Configuration</title>
   <style>
         body {
           font-family: Arial, sans-serif;
@@ -84,18 +84,18 @@ const char index_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
   <div class="container">
-    <h1>Configuración</h1>
+    <h1>Configuration</h1>
     <form action="/save" method="POST">
       <label for="ssid">SSID:</label>
       <input type="text" id="ssid" name="ssid" required>
-      <label for="password">Contraseña:</label>
+      <label for="password">Password:</label>
       <input type="password" id="password" name="password" required>
-      <label for="server_url">URL del servidor:</label>
+      <label for="server_url">Server URL:</label>
       <input type="text" id="server_url" name="server_url" required>
-      <input type="submit" value="Guardar" class="save">
+      <input type="submit" value="Save" class="save">
     </form>
     <form action="/reset" method="POST">
-      <input type="submit" value="Resetear Configuración" class="reset">
+      <input type="submit" value="Reset Configuration" class="reset">
     </form>
   </div>
 </body>
@@ -116,7 +116,7 @@ void setup() {
   }
   Wire.begin();
   if (mySHTC3.begin() != SHTC3_Status_Nominal) {
-    Serial.println("Error al inicializar el sensor SHTC3!");
+    Serial.println("Error initializing the SHTC3 sensor!");
     while(1);
   }
 }
@@ -134,7 +134,7 @@ void loop() {
 
 void startCaptivePortal() {
   WiFi.softAP(ap_ssid, ap_password);
-  Serial.print("Access Point iniciado: ");
+  Serial.print("Access Point started: ");
   Serial.println(WiFi.softAPIP());
   dnsServer.start(53, "*", WiFi.softAPIP());
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -150,15 +150,15 @@ void startCaptivePortal() {
       preferences.putString("server_url", serverUrl);
       preferences.putBool("configured", true);
       server_url = serverUrl;
-      request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},5000);</script>Configuración guardada. Reconectando...");
+      request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},5000);</script>Configuration saved. Reconnecting...");
       connectToWiFi(ssid, password);
     } else {
-      request->send(400, "text/plain", "Todos los campos son requeridos");
+      request->send(400, "text/plain", "All fields are required");
     }
   });
   server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
     preferences.clear();
-    request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},3000);</script>Configuración reseteada. Reiniciando...");
+    request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},3000);</script>Configuration reset. Restarting...");
     delay(3000);
     ESP.restart();
   });
@@ -170,21 +170,21 @@ void startCaptivePortal() {
 
 void connectToWiFi(String ssid, String password) {
   WiFi.begin(ssid.c_str(), password.c_str());
-  Serial.println("Conectando a WiFi...");
+  Serial.println("Connecting to WiFi...");
   unsigned long startTime = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - startTime < 15000) {
     delay(500);
     Serial.print(".");
   }
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nConectado!");
+    Serial.println("\nConnected!");
     Serial.print("IP: ");
     Serial.println(WiFi.localIP());
     if (!MDNS.begin("esp32")) {
-      Serial.println("Error iniciando mDNS!");
+      Serial.println("Error starting mDNS!");
     }
   } else {
-    Serial.println("\nError de conexión! Manteniendo el AP activo para reconfiguración.");
+    Serial.println("\nConnection failed! Keeping AP active for reconfiguration.");
   }
 }
 
@@ -192,9 +192,9 @@ void readSensorData() {
   if (mySHTC3.update() == SHTC3_Status_Nominal) {
     temperatureNow = mySHTC3.toDegC();
     humidity = mySHTC3.toPercent();
-    Serial.printf("Temperatura: %.2f°C, Humedad: %.2f%%\n", temperatureNow, humidity);
+    Serial.printf("Temperature: %.2f°C, Humidity: %.2f%%\n", temperatureNow, humidity);
   } else {
-    Serial.println("Error leyendo sensor!");
+    Serial.println("Error reading the sensor!");
   }
 }
 
@@ -203,7 +203,7 @@ void sendDataToServer() {
   HTTPClient http;
   String full_url = server_url + "/measurements/measurements";
   http.begin(full_url);
-  http.addHeader("Authorization", "Basic YWRtaW5NaWNyb3M6YWRtaW5taWNyb3MxMjM="); //adminmicros 
+  http.addHeader("Authorization", "Basic YWRtaW46YWRtaW51c2Vy");
   http.addHeader("Content-Type", "application/json");
   String payload = "{";
   payload += "\"data\": {";
@@ -213,10 +213,10 @@ void sendDataToServer() {
   payload += "}}";
   int httpCode = http.POST(payload);
   if (httpCode > 0) {
-    Serial.println("URL a la que se está enviando: " + full_url);
-    Serial.printf("Datos enviados. Código: %d\n", httpCode);
+    Serial.println("URL being sent to: " + full_url);
+    Serial.printf("Data sent. Code: %d\n", httpCode);
   } else {
-    Serial.printf("Error en envío: %s\n", http.errorToString(httpCode).c_str());
+    Serial.printf("Error sending data: %s\n", http.errorToString(httpCode).c_str());
   }
   http.end();
 }
