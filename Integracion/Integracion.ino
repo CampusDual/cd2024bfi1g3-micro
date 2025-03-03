@@ -84,18 +84,18 @@ const char index_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
   <div class="container">
-    <h1>Configuration</h1>
+    <h1>Configuración</h1>
     <form action="/save" method="POST">
       <label for="ssid">SSID:</label>
       <input type="text" id="ssid" name="ssid" required>
-      <label for="password">Password:</label>
+      <label for="password">Contraseña:</label>
       <input type="password" id="password" name="password" required>
-      <label for="server_url">Server URL:</label>
+      <label for="server_url">URL del servidor:</label>
       <input type="text" id="server_url" name="server_url" required>
-      <input type="submit" value="Save" class="save">
+      <input type="submit" value="Guardar" class="save">
     </form>
     <form action="/reset" method="POST">
-      <input type="submit" value="Reset Configuration" class="reset">
+      <input type="submit" value="Resetear Configuración" class="reset">
     </form>
   </div>
 </body>
