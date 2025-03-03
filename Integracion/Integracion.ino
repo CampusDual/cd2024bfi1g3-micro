@@ -203,7 +203,7 @@ void sendDataToServer() {
   HTTPClient http;
   String full_url = server_url + "/measurements/measurements";
   http.begin(full_url);
-  http.addHeader("Authorization", "Basic YWRtaW46YWRtaW51c2Vy");
+  http.addHeader("Authorization", "Basic YWRtaW5NaWNyb3M6YWRtaW5taWNyb3MxMjM=");
   http.addHeader("Content-Type", "application/json");
   String payload = "{";
   payload += "\"data\": {";
