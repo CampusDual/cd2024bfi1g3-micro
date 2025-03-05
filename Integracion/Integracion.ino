@@ -7,6 +7,7 @@
 #include <ESPmDNS.h>
 #include <ArduinoJson.h>
 #include "SparkFun_SHTC3.h"
+#include <Base64.h>
 
 AsyncWebServer server(80);
 DNSServer dnsServer;
@@ -20,67 +21,67 @@ float humidity = 0;
 float temperatureNow = 0;
 unsigned long lastSendTime = 0;
 String server_url = "";
-
+String authCredentialsBase64 = ""; 
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuration</title>
+  <title>Configuración</title>
   <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          background-color: #f4f4f4;
-        }
-        .container {
-          background-color: #fff;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          max-width: 400px;
-          width: 100%;
-        }
-        h1 {
-          text-align: center;
-          color: #333;
-        }
-        form {
-          display: flex;
-          flex-direction: column;
-        }
-        label {
-          margin-bottom: 5px;
-          color: #555;
-        }
-        input[type="text"],
-        input[type="password"] {
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-        }
-        input[type="submit"] {
-          padding: 10px;
-          border: none;
-          border-radius: 4px;
-          color: #fff;
-          cursor: pointer;
-        }
-        input[type="submit"].save {
-          background-color: #007bff;
-        }
-        input[type="submit"].reset {
-          background-color: #dc3545;
-          margin-top: 10px;
-        }
-      </style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-bottom: 5px;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="password"] {
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input[type="submit"] {
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+    }
+    input[type="submit"].save {
+      background-color: #007bff;
+    }
+    input[type="submit"].reset {
+      background-color: #dc3545;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -88,10 +89,14 @@ const char index_html[] PROGMEM = R"rawliteral(
     <form action="/save" method="POST">
       <label for="ssid">SSID:</label>
       <input type="text" id="ssid" name="ssid" required>
-      <label for="password">Contraseña:</label>
+      <label for="password">Contraseña WiFi:</label>
       <input type="password" id="password" name="password" required>
       <label for="server_url">URL del servidor:</label>
       <input type="text" id="server_url" name="server_url" required>
+      <label for="auth_user">Usuario:</label>
+      <input type="text" id="auth_user" name="auth_user" required>
+      <label for="auth_password">Contraseña de autenticación:</label>
+      <input type="password" id="auth_password" name="auth_password" required>
       <input type="submit" value="Guardar" class="save">
     </form>
     <form action="/reset" method="POST">
@@ -110,8 +115,9 @@ void setup() {
   String savedSSID = preferences.getString("ssid", "");
   String savedPass = preferences.getString("password", "");
   server_url = preferences.getString("server_url", "");
+  authCredentialsBase64 = preferences.getString("auth_base64", "");
   startCaptivePortal();
-  if (configured && !savedSSID.isEmpty() && !savedPass.isEmpty() && !server_url.isEmpty()) {
+  if (configured && !savedSSID.isEmpty() && !savedPass.isEmpty() && !server_url.isEmpty() && !authCredentialsBase64.isEmpty()) {
     connectToWiFi(savedSSID, savedPass);
   }
   Wire.begin();
@@ -144,16 +150,22 @@ void startCaptivePortal() {
     String ssid = request->arg("ssid");
     String password = request->arg("password");
     String serverUrl = request->arg("server_url");
-    if(ssid.length() > 0 && password.length() > 0 && serverUrl.length() > 0) {
+    String auth_user = request->arg("auth_user");           
+    String auth_password = request->arg("auth_password");
+    if(ssid.length() > 0 && password.length() > 0 && serverUrl.length() > 0 &&
+       auth_user.length() > 0 && auth_password.length() > 0) {
       preferences.putString("ssid", ssid);
       preferences.putString("password", password);
       preferences.putString("server_url", serverUrl);
+      String credentials = auth_user + ":" + auth_password;
+      authCredentialsBase64 = base64::encode(reinterpret_cast<const uint8_t*>(credentials.c_str()), credentials.length());
+      preferences.putString("auth_base64", authCredentialsBase64);
       preferences.putBool("configured", true);
       server_url = serverUrl;
       request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},5000);</script>Configuration saved. Reconnecting...");
       connectToWiFi(ssid, password);
     } else {
-      request->send(400, "text/plain", "All fields are required");
+      request->send(400, "text/plain", "Todos los campos son obligatorios");
     }
   });
   server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -203,11 +215,12 @@ void sendDataToServer() {
   HTTPClient http;
   String full_url = server_url + "/measurements/measurements";
   http.begin(full_url);
-  http.addHeader("Authorization", "Basic YWRtaW5NaWNyb3M6YWRtaW5taWNyb3MxMjM=");
+  http.setTimeout(20000);
+  http.addHeader("Authorization", "Basic " + authCredentialsBase64);
   http.addHeader("Content-Type", "application/json");
   String payload = "{";
   payload += "\"data\": {";
-  payload += "\"DEV_MAC\":\"" + WiFi.macAddress() + "\",";
+  payload += "\"DEV_MAC\":\"" + WiFi.macAddress() + "\","; 
   payload += "\"ME_TEMP\":" + String(temperatureNow) + ",";
   payload += "\"ME_HUMIDITY\":" + String(humidity);
   payload += "}}";
@@ -219,4 +232,4 @@ void sendDataToServer() {
     Serial.printf("Error sending data: %s\n", http.errorToString(httpCode).c_str());
   }
   http.end();
-}
+}  
