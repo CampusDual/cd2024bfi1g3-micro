@@ -15,7 +15,7 @@ Preferences preferences;
 
 const char* ap_ssid = "ESP32_Config";
 const char* ap_password = "12345678";
-
+long reset_time=0;
 SHTC3 mySHTC3;
 float humidity = 0;
 float temperatureNow = 0;
@@ -92,7 +92,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <label for="password">Contraseña WiFi:</label>
       <input type="password" id="password" name="password" required>
       <label for="server_url">URL del servidor:</label>
-      <input type="text" id="server_url" name="server_url" required>
+      <input type="text" id="server_url" name="server_url" placeholder="http://IPServidor:Puerto" required>
       <label for="auth_user">Usuario:</label>
       <input type="text" id="auth_user" name="auth_user" required>
       <label for="auth_password">Contraseña de autenticación:</label>
@@ -106,6 +106,11 @@ const char index_html[] PROGMEM = R"rawliteral(
 </body>
 </html>
 )rawliteral";
+void startCaptivePortal();
+void connectToWiFi(String ssid, String password);
+void readSensorData();
+void sendDataToServer();
+
 
 void setup() {
   Serial.begin(9600);
@@ -128,6 +133,13 @@ void setup() {
 }
 
 void loop() {
+  if(reset_time!=0 && millis()>reset_time){
+    WiFi.softAPdisconnect(true);
+    preferences.clear();
+    preferences.end();
+    ESP.restart();
+    WiFi.softAPdisconnect(true);
+  }
   dnsServer.processNextRequest();
   if (WiFi.status() == WL_CONNECTED) {
     if (millis() - lastSendTime >= 60000) {
@@ -136,6 +148,7 @@ void loop() {
       lastSendTime = millis();
     }
   }
+  
 }
 
 void startCaptivePortal() {
@@ -162,18 +175,102 @@ void startCaptivePortal() {
       preferences.putString("auth_base64", authCredentialsBase64);
       preferences.putBool("configured", true);
       server_url = serverUrl;
-      request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},5000);</script>Configuration saved. Reconnecting...");
+      request->send(200, "text/html", R"rawliteral(
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Configuración Guardada</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              background-color: #f4f4f4;
+            }
+            .container {
+              background-color: #fff;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              max-width: 400px;
+              width: 100%;
+              text-align: center;
+            }
+            h1 {
+              color: #333;
+              font-size: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>Configuración guardada. Reconectando...</h1>
+          </div>
+          <script>
+            setTimeout(function(){ window.location.href='/'; }, 5000);
+          </script>
+        </body>
+        </html>
+        )rawliteral");
+
       connectToWiFi(ssid, password);
     } else {
       request->send(400, "text/plain", "Todos los campos son obligatorios");
     }
   });
   server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
-    preferences.clear();
-    request->send(200, "text/html", "<script>setTimeout(function(){window.location.href='/';},3000);</script>Configuration reset. Restarting...");
-    delay(3000);
-    ESP.restart();
-  });
+    
+    // preferences.end();
+    reset_time=millis()+5000;
+    request->send(200, "text/html", R"rawliteral(
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reset Completo</title>
+        <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100vh;
+              background-color: #f4f4f4;
+            }
+            .container {
+              background-color: #fff;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              max-width: 400px;
+              width: 100%;
+              text-align: center;
+            }
+            h1 {
+              color: #333;
+              font-size: 20px;
+            }
+          </style>
+      </head>
+      <body>
+        <div class="container">
+        <h1>Configuración reseteada. Reiniciando...</h1>
+        </div>
+      </body>
+      </html>
+    )rawliteral");
+
+});
+
   server.onNotFound([](AsyncWebServerRequest *request){
     request->redirect("http://" + WiFi.softAPIP().toString() + "/");
   });
@@ -232,4 +329,4 @@ void sendDataToServer() {
     Serial.printf("Error sending data: %s\n", http.errorToString(httpCode).c_str());
   }
   http.end();
-}  
+}
