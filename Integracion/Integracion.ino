@@ -134,12 +134,11 @@ void setup() {
 
 void loop() {
   if(reset_time!=0 && millis()>reset_time){
-    // WiFi.softAPdisconnect(true);
+     WiFi.softAPdisconnect(true);   
+    dnsServer.stop();              
     preferences.clear();
     preferences.end();
-    WiFi.softAPdisconnect(true);
     ESP.restart();
-    
   }
   dnsServer.processNextRequest();
   if (WiFi.status() == WL_CONNECTED) {
@@ -322,8 +321,9 @@ void sendDataToServer() {
   payload += "\"ME_TEMP\":" + String(temperatureNow) + ",";
   payload += "\"ME_HUMIDITY\":" + String(humidity);
   payload += "}}";
-  // Serial.println("JSON: "+payload);
-  // Serial.println("AuthCredentials: "+ authCredentialsBase64);
+  Serial.println("JSON: "+payload);
+  Serial.println("AuthCredentials: "+ authCredentialsBase64);
+  Serial.println("Full url: "+full_url);
   int httpCode = http.POST(payload);
   if (httpCode > 0) {
     Serial.println("URL being sent to: " + full_url);
